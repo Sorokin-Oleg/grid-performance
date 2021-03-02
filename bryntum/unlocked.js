@@ -1,15 +1,16 @@
 import { Grid } from './js/grid.module.js';
 import { RenderTimer, FPS, Scroller } from '../util/util.js';
+import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
-    const response = await fetch('../util/10000.json');
-    const json = await response.json();
+    // const response = await fetch('../util/10000.json');
+    // const json = await response.json();
+    const json = DataGenerator.generateData();
 
     RenderTimer.start({
         callback() {
             const grid = new Grid({
                 appendTo : 'container',
-
                 // Bryntum Grid has many features enabled by default, turn them off to match others
                 features : {
                     cellEdit      : false,
@@ -57,7 +58,7 @@ async function init() {
                     { field : 'done', text : 'Done', width : 90, renderer : ({ value }) => value ? 'Yes' : 'No' },
                     { field : 'rating', text : 'Rating', width : 90 }
                 ],
-
+                rowHeight: 43,
                 store : {
                     useRawData : true,
                     data       : json

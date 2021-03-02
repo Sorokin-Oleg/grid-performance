@@ -6,7 +6,7 @@ console.log(data)
     RenderTimer.start({
         callback() {
             const grid = window.grid = webix.ui({ view:"treetable", container : 'container',
-                leftSplit:2, rowHeight:46,
+                leftSplit:2,
                 columns : [
                     { id : 'id', header : 'Id', width : 100 },
                     { id : 'name', header : 'Name', width : 250, template : '{common.treetable()}#name#' },
@@ -52,6 +52,7 @@ console.log(data)
                     { id : 'number20', header : 'Num20', width : 59 }
                 ],
 
+                rowHeight: 43,
                 data : data.tree
             });
 

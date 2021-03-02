@@ -1,13 +1,16 @@
 import { RenderTimer, FPS, Scroller } from '../util/util.js';
+import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
-    const response = await fetch('../util/10000.json');
-    const json = await response.json();
+    // const response = await fetch('../util/10000.json');
+    // const json = await response.json();
+    const json = DataGenerator.generateData();
 
     RenderTimer.start({
         callback() {
             const grid = new dhx.Grid('container', {
                 headerSort : false,
+                htmlEnable: true,
 
                 columns : [
                     { id : 'id', header : [{ text : 'Id' }], width : 100 },
@@ -19,7 +22,7 @@ async function init() {
                         id : 'color',
                         header : [{ text : 'Color' }],
                         width : 120,
-                        template : value => `<div style="background-color: ${value}">${value}</div>`
+                        template : value => `<div style="width:100%;height:100%;background-color: ${value}">${value}</div>`
                     },
                     {
                         id : 'score', header : [{ text : 'Score' }], width : 120, template(value) {
@@ -40,7 +43,8 @@ async function init() {
                         id : 'start',
                         header : [{ text : 'Start' }],
                         width : 120,
-                        type : 'date'
+                        type : 'date',
+                        format: "%Y-%m-%d"
                     },
                     {
                         id : 'done',
@@ -51,6 +55,7 @@ async function init() {
                     { id : 'rating', header : [{ text : 'Rating' }], width : 90 }
                 ],
 
+                rowHeight: 43,
                 data : json
             });
 

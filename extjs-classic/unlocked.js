@@ -1,8 +1,10 @@
 import { RenderTimer, FPS, Scroller } from '../util/util.js';
+import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
-    const response = await fetch('../util/10000.json');
-    const data = await response.json();
+    // const response = await fetch('../util/10000.json');
+    // const data = await response.json();
+    const data = DataGenerator.generateData();
 
     Ext.onReady(() => {
         RenderTimer.start({

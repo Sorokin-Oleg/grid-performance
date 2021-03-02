@@ -10,7 +10,6 @@ async function init() {
         callback() {
             const grid = window.grid = new TreeGrid({
                 appendTo : 'container',
-
                 columns : [
                     { field : 'id', text : 'Id', width : 100, locked : true },
                     { field : 'name', text : 'Name', width : 250, locked : true, type : 'tree' },
@@ -62,6 +61,7 @@ async function init() {
                     { field : 'number20', text : 'Num20', width : 50 }
                 ],
 
+                rowHeight: 43,
                 data : data.tree
             });
 

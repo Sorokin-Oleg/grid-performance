@@ -1,3 +1,5 @@
+import { MEASURING_COUNT } from "./consts.js";
+
 /**
  * Utility class that measures FPS.
  */
@@ -29,14 +31,53 @@ export class FPS {
             average = this.frames.length / (sum / 1000),
             fps = this.frameCount / (elapsed / 1000);
 
-        console.table({
-            'Elapsed time' : elapsed,
-            'Frames' : this.frameCount,
-            'Frame sum' : sum,
-            'Average FPS 1' : fps,
-            'Average FPS 2' : average
-        });
+        setTimeout(() => {
+            let currentMeasuring = Number(sessionStorage.getItem('measuring') || 0);
+            const results = JSON.parse(sessionStorage.getItem('results')) || [];
 
+            currentMeasuring += 1;
+            results.push({
+                initial: window.initialTime,
+                elapsed,
+                frames: this.frameCount,
+                sum,
+                fps,
+                average
+            });
+
+            if (currentMeasuring < MEASURING_COUNT) {
+                sessionStorage.setItem('measuring', String(currentMeasuring));
+                sessionStorage.setItem('results', JSON.stringify(results));
+
+                location.reload()
+            } else {
+                if (MEASURING_COUNT > 0) {
+                    let averageResult = results.reduce((obj, item) => {
+                        Object.keys(item).forEach(prop => obj[prop] = Number(obj[prop] || 0) + item[prop]);
+
+                        return obj;
+                    }, {});
+
+                    Object.keys(averageResult).forEach(prop => averageResult[prop] = averageResult[prop]/MEASURING_COUNT);
+
+                    console.log('All results for every measuring');
+                    console.log(results);
+
+                    console.log(`Average results for ${currentMeasuring} measuring(s)`);
+                    console.table({
+                        'Initial rendering (ms)': averageResult.initial,
+                        'Elapsed time': averageResult.elapsed,
+                        'Frames': averageResult.frames,
+                        'Frame sum': averageResult.sum,
+                        'Average FPS 1' : averageResult.fps,
+                        'Average FPS 2' : averageResult.average
+                    });
+
+                    sessionStorage.removeItem('measuring');
+                    sessionStorage.removeItem('results');
+                }
+            }
+        }, 1000)
         //console.log(this.frames);
     }
 
@@ -89,6 +130,7 @@ export class RenderTimer {
     static stop() {
         if (this.running) {
             const elapsed = performance.now() - this.start;
+            window.initialTime = elapsed;
 
             console.table({
                 'Initial rendering (ms)' : elapsed

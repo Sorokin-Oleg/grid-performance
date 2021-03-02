@@ -1,15 +1,17 @@
 import { RenderTimer, FPS, Scroller } from '../util/util.js';
+import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
-    const response = await fetch('../util/10000.json');
-    const json = await response.json();
+    // const response = await fetch('../util/10000.json');
+    // const json = await response.json();
+    const json = DataGenerator.generateData();
 
     window.items = json;
 
     RenderTimer.start({
         sync : false,
         callback() {
-            COMPONENT('datagrid', 'width:1280;height:1024;colwidth:150;rowheight:45;clusterize:true;limit:80;resize:false;reorder:false;sorting:false;remember:false;highlight:false;unhighlight:true;autoselect:false;llowtitles:false;fullwidth_xs:true;clickid:id;', function(self, config) {
+            COMPONENT('datagrid', 'width:1280;height:1024;colwidth:150;rowheight:43;clusterize:true;limit:80;resize:false;reorder:false;sorting:false;remember:false;highlight:false;unhighlight:true;autoselect:false;llowtitles:false;fullwidth_xs:true;clickid:id;', function(self, config) {
 
                 var opt = { filter: {}, filtercache: {}, filtervalues: {}, scroll: false, selected: {}, operation: '' };
                 var header, vbody, footer, vcontainer, hcontainer, varea, hbody, vscrollbar, vscrollbararea, hscrollbar, hscrollbararea, ecolumns, isecolumns = false;

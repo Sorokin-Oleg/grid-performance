@@ -1,8 +1,10 @@
 import { RenderTimer, FPS, Scroller } from '../util/util.js';
+import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
-    const response = await fetch('../util/10000.json');
-    const json = await response.json();
+    // const response = await fetch('../util/10000.json');
+    // const json = await response.json();
+    const json = DataGenerator.generateData();
 
     RenderTimer.start({
         sync : false,
@@ -54,6 +56,10 @@ async function init() {
                     { dataField : 'done', caption : 'Done', width : 90, dataType : 'text', customizeText : ({ value }) => value ? 'Yes' : 'No' },
                     { dataField : 'rating', caption : 'Rating', width : 90 }
                 ],
+
+                onRowPrepared: function(e) {
+                    e.rowElement.css({ height: 43});
+                },
                 onContentReady() {
                     if (RenderTimer.running) {
                         RenderTimer.stop();

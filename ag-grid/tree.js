@@ -83,6 +83,7 @@ async function init() {
                     { field : 'number20', headerName : 'Num20', width : 50 }
                 ],
 
+                rowHeight: 43,
                 rowData : data.allNodes,
 
                 onGridReady() {

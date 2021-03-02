@@ -1,17 +1,6 @@
-.idea
-/ag-grid/css
-/ag-grid/js
-/bryntum/css
-/bryntum/css/fonts
-/bryntum/js
-/dhtmlx/css
-/dhtmlx/css/fonts
-/dhtmlx/js
-/devextreme/css
-/devextreme/js
-/extjs/css
-/extjs/css/fonts
-/extjs/js
-/extjs-classic/css
-/extjs-classic/css/fonts
-/extjs-classic/js
+# OS
+.DS_Store
+
+# IDEs and editors
+/.idea
+/.vscode

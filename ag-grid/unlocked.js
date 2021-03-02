@@ -1,8 +1,10 @@
 import { RenderTimer, FPS, Scroller } from '../util/util.js';
+import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
-    const response = await fetch('../util/10000.json');
-    const json = await response.json();
+    // const response = await fetch('../util/10000.json');
+    // const json = await response.json();
+    const json = DataGenerator.generateData();
 
     RenderTimer.start({
         sync : false,
@@ -45,6 +47,7 @@ async function init() {
                     { field : 'rating', headerName : 'Rating', width : 90 }
                 ],
 
+                rowHeight: 43,
                 rowData : json,
 
                 onGridReady() {
