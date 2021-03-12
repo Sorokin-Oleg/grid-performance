@@ -2,9 +2,10 @@ import { RenderTimer, FPS, Scroller } from '../util/util.js';
 import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
-    // const response = await fetch('../util/10000.json');
-    // const json = await response.json();
-    const json = DataGenerator.generateData();
+    const response = await fetch('../util/10000.json');
+    // const response = await fetch('../util/100000.json');
+const json = await response.json();
+    // const json = DataGenerator.generateData();
 
     RenderTimer.start({
         callback() {
@@ -14,7 +15,6 @@ async function init() {
                     $init: obj => obj.start = new Date(obj.start)
                 },
                 view:"datatable", container:"container",
-                leftSplit:3,
                 columns : [
                     { id : 'id', header : 'Id', width : 100 },
                     { id : 'firstName', header : 'First name', width : 130 },
@@ -45,11 +45,11 @@ async function init() {
                     },
                     { id : 'start', header : 'Start', width : 120, format: dateFormat },
                     { id : 'done', header : 'Done', width : 90, template : obj => obj.done ? 'Yes' : 'No' },
-                    { id : 'rating', header : 'Rating', fillspace:true }
+                    { id : 'rating', header : 'Rating', width : 90 }
                 ],
-
+                leftSplit: 3,
                 rowHeight: 43,
-                data:json
+                data: json,
             });
 
             setTimeout(() => {

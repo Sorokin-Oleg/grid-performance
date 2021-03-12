@@ -2,7 +2,6 @@ import { RenderTimer, FPS, Scroller, TreeGenerator } from '../util/util.js';
 
 async function init() {
     const data = TreeGenerator.generate({ nodeCount : 10000, depth : 5, childrenProperty : 'data' });
-console.log(data)
     RenderTimer.start({
         callback() {
             const grid = window.grid = webix.ui({ view:"treetable", container : 'container',
@@ -53,7 +52,7 @@ console.log(data)
                 ],
 
                 rowHeight: 43,
-                data : data.tree
+                data : data.tree,
             });
 
             setTimeout(() => {

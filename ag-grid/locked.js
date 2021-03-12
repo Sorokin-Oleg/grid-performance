@@ -2,9 +2,10 @@ import { RenderTimer, FPS, Scroller } from '../util/util.js';
 import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
-    // const response = await fetch('../util/10000.json');
-    // const json = await response.json();
-    const json = DataGenerator.generateData();
+    const response = await fetch('../util/10000.json');
+    // const response = await fetch('../util/100000.json');
+    const json = await response.json();
+    // const json = DataGenerator.generateData();
 
     RenderTimer.start({
         sync : false,
@@ -37,7 +38,7 @@ async function init() {
                             `;
                         }
                     },
-                    { field : 'start', headerName : 'Start', width : 120/*, type: 'date', format: 'YYYY-MM-DD'*/ },
+                    { field : 'start', headerName : 'Start', width : 120, type: 'date', type: 'dateColumn' },
                     {
                         field : 'done',
                         headerName : 'Done',

@@ -2,9 +2,10 @@ import { RenderTimer, FPS, Scroller } from '../util/util.js';
 import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
-    // const response = await fetch('../util/10000.json');
-    // const data = await response.json();
-    const data = DataGenerator.generateData();
+    const response = await fetch('../util/10000.json');
+    // const response = await fetch('../util/100000.json');
+    const data = await response.json();
+    // const data = DataGenerator.generateData();
 
     Ext.onReady(() => {
         RenderTimer.start({
@@ -16,11 +17,11 @@ async function init() {
                     },
 
                     columns : [
-                        { dataIndex : 'id', text : 'Id', width : 100 },
-                        { dataIndex : 'firstName', text : 'First name', width : 130 },
-                        { dataIndex : 'surname', text : 'Surname', width : 130 },
-                        { dataIndex : 'city', text : 'City', width : 150 },
-                        { dataIndex : 'age', text : 'Age', width : 100 },
+                        { dataIndex : 'id', text : 'Id', width : 100, sortable: false, resizable: false, },
+                        { dataIndex : 'firstName', text : 'First name', width : 130, sortable: false, resizable: false, },
+                        { dataIndex : 'surname', text : 'Surname', width : 130, sortable: false, resizable: false, },
+                        { dataIndex : 'city', text : 'City', width : 150, sortable: false, resizable: false, },
+                        { dataIndex : 'age', text : 'Age', width : 100, sortable: false, resizable: false, },
                         {
                             dataIndex : 'color',
                             text : 'Color',
@@ -28,7 +29,9 @@ async function init() {
                             renderer(value, metaData) {
                                 metaData.tdStyle = `background-color: ${value}`;
                                 return value;
-                            }
+                            },
+                            sortable: false,
+                            resizable: false,
                         },
                         {
                             dataIndex : 'score',
@@ -46,22 +49,25 @@ async function init() {
                                 "></div>
                             ${score}
                             `
-                            }
+                            },
+                            sortable: false,
+                            resizable: false,
                         },
-                        { dataIndex : 'start', text : 'Start', width : 120, xtype : 'datecolumn' },
+                        { dataIndex : 'start', text : 'Start', width : 120, xtype : 'datecolumn', sortable: false, },
                         {
                             dataIndex : 'done',
                             text : 'Done',
                             width : 90,
-                            renderer : (value) => value ? 'Yes' : 'No'
+                            renderer : (value) => value ? 'Yes' : 'No',
+                            sortable: false,
+                            resizable: false,
                         },
-                        { dataIndex : 'rating', text : 'Rating', width : 90 }
+                        { dataIndex : 'rating', text : 'Rating', width : 90, sortable: false, resizable: false, }
                     ],
 
                     height : 1024,
-
+                    rowHeight: 43,
                     renderTo : 'container',
-
                     bufferedRenderer : true
                 });
 
