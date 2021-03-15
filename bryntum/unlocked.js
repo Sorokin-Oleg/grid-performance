@@ -1,8 +1,10 @@
 import { Grid } from './js/grid.module.js';
+import ColumnsGenerator from './util.js';
 import { RenderTimer, FPS, Scroller } from '../util/util.js';
 import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
+    const columns = ColumnsGenerator.getDefaultColumns();
     const response = await fetch('../util/10000.json');
     // const response = await fetch('../util/100000.json');
     const json = await response.json();
@@ -23,42 +25,8 @@ async function init() {
                     sort          : false
                 },
 
-                columns : [
-                    { field : 'id', text : 'Id', width : 100 },
-                    { field : 'firstName', text : 'First name', width : 130  },
-                    { field : 'surname', text : 'Surname', width : 130 },
-                    { field : 'city', text : 'City', width : 150 },
-                    { field : 'age', text : 'Age', width : 100 },
-                    {
-                        field    : 'color',
-                        text     : 'Color',
-                        width    : 120,
-                        renderer : ({ value, cellElement }) => cellElement.style.backgroundColor = value
-                    },
-                    {
-                        field      : 'score',
-                        text       : 'Score',
-                        width      : 120,
-                        htmlEncode : false,
-                        //autoSyncHtml : true,
-                        renderer({ value }) {
-                            return `
-                            <div style="
-                                width : ${value / 10}%; 
-                                background-color: blue; 
-                                height : 3px;
-                                position: absolute;
-                                top: 0;
-                                left :0;
-                                "></div>
-                            ${value}
-                            `;
-                        }
-                    },
-                    { field : 'start', text : 'Start', width : 120, type : 'date', format : 'YYYY-MM-DD' },
-                    { field : 'done', text : 'Done', width : 90, renderer : ({ value }) => value ? 'Yes' : 'No' },
-                    { field : 'rating', text : 'Rating', width : 90 }
-                ],
+                columns,
+
                 rowHeight: 43,
                 store : {
                     useRawData : true,

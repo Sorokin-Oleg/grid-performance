@@ -1,7 +1,9 @@
+import ColumnsGenerator from './util.js';
 import { RenderTimer, FPS, Scroller } from '../util/util.js';
 import DataGenerator from '../util/dataGenerator.js';
 
 async function init() {
+    const columns = ColumnsGenerator.getDefaultColumns();
     const response = await fetch('../util/10000.json');
     // const response = await fetch('../util/100000.json');
     const json = await response.json();
@@ -20,40 +22,9 @@ async function init() {
                 sorting: {
                     mode: "none"
                 },
-                columns: [
-                    { dataField : 'id', caption : 'Id', width : 100 },
-                    { dataField : 'firstName', caption : 'First name', width : 130 },
-                    { dataField : 'surname', caption : 'Surname', width : 130 },
-                    { dataField : 'city', caption : 'City', width : 150 },
-                    { dataField : 'age', caption : 'Age', width : 100 },
-                    {
-                        dataField : 'color',
-                        caption : 'Color',
-                        width : 120,
-                        cellTemplate : (element, info) => element.text(info.text).css('background-color', info.text)
-                    },
-                    {
-                        dataField : 'score',
-                        caption : 'Score',
-                        width : 120,
-                        cellTemplate(element, info) {
-                            element.append(`
-                            <div style="
-                                width : ${info.text / 10}%; 
-                                background-color: blue; 
-                                height : 3px;
-                                position: absolute;
-                                top: 0;
-                                left :0;
-                                "></div>
-                            ${info.text}
-                            `).css('position', 'relative');
-                        }
-                    },
-                    { dataField : 'start', caption : 'Start', width : 120, dataType : 'date' },
-                    { dataField : 'done', caption : 'Done', width : 90, dataType : 'text', customizeText : ({ value }) => value ? 'Yes' : 'No' },
-                    { dataField : 'rating', caption : 'Rating', width : 90 }
-                ],
+
+                columns,
+
                 onRowPrepared: function(e) {
                     e.rowElement.css({ height: 43});
                 },
