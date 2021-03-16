@@ -65,6 +65,26 @@ class DataGenerator {
 
         return data;
     }
+
+    getDefinedData(definedData, count) {
+        const dataLength = count ? count + 1 : ROWS_COUNT + 1;
+        const data = [];
+
+        for (let index = 1; index < dataLength; index ++) {
+            let item = {};
+            Object.entries(definedData).map(([key, count]) => {
+                if (count !== 0) {
+                    for (let index = 0; index < count; index++) {
+                        const defaultData = this.getItem(index);
+                        Object.assign(item, { [key + index]: defaultData[key] });
+                    }
+                }
+            });
+            data.push(item);
+        }
+
+        return data;
+    }
 }
 
 export default new DataGenerator();
