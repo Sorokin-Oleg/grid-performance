@@ -1,5 +1,5 @@
-import { RenderTimer, FPS, Scroller } from '../util/util.js';
-import DataGenerator from '../util/dataGenerator.js';
+import { RenderTimer, FPS, Scroller } from '../../util/util.js';
+import DataGenerator from '../../util/dataGenerator.js';
 
 async function init() {
     const response = await fetch('../util/10000.json');
