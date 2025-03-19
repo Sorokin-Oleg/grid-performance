@@ -2,8 +2,6 @@
 
 <head>
     <title>dhtmlxGrid - Locked columns</title>
-    <link rel="stylesheet" href="https://cdn.dhtmlx.com/suite/edge/suite.css">
-    <script src="https://cdn.dhtmlx.com/suite/edge/suite.js"></script>
     <style>
         #container {
             width: 1280px;
@@ -14,7 +12,10 @@
 
 <body>
     <div id="container"></div>
-    <script type="module" src="./src/locked.js"></script>
+    <script src="./loadScripts.js"></script>
+    <script>
+        loadScripts('./src/locked.js');
+    </script>
 </body>
 
 </html>
