@@ -37,3 +37,13 @@ listening for an event.
 * Scroll FPS measured by using a JS frame counter and changing scroll programmatically. Time taken to reach a predefined 
 scroll distance was measured and used to calculate an average FPS value.
 * Page reloads a second after the measurement finished.
+
+## Running the Tests
+Ensure you have VS Code with the `Live Server` extension installed.
+
+After starting the `Live Server`, it will open at http://127.0.0.1:5500.
+
+Run the automation script in a terminal:
+```
+node automation/automate.js
+```

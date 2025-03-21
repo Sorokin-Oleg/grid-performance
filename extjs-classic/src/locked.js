@@ -8,21 +8,20 @@ async function init() {
         RenderTimer.start({
             callback() {
                 const grid = Ext.create('Ext.grid.Panel', {
-                    store : {
-                        fields : [{ name : 'start', type : 'date' }],
-                        data
+                    store: {
+                        fields: [{ name: 'start', type: 'date' }],
+                        data: json
                     },
-
-                    columns : [
-                        { dataIndex : 'id', text : 'Id', width : 100, locked : true, sortable: false, resizable: false, },
-                        { dataIndex : 'firstName', text : 'First name', width : 130, locked : true, sortable: false, resizable: false, },
-                        { dataIndex : 'surname', text : 'Surname', width : 130, locked : true, sortable: false, resizable: false, },
-                        { dataIndex : 'city', text : 'City', width : 150, sortable: false, resizable: false, },
-                        { dataIndex : 'age', text : 'Age', width : 100, sortable: false, resizable: false, },
+                    columns: [
+                        { dataIndex: 'id', text: 'Id', width: 100, locked: true, sortable: false, resizable: false },
+                        { dataIndex: 'firstName', text: 'First name', width: 130, locked: true, sortable: false, resizable: false },
+                        { dataIndex: 'surname', text: 'Surname', width: 130, locked: true, sortable: false, resizable: false },
+                        { dataIndex: 'city', text: 'City', width: 150, sortable: false, resizable: false },
+                        { dataIndex: 'age', text: 'Age', width: 100, sortable: false, resizable: false },
                         {
-                            dataIndex : 'color',
-                            text : 'Color',
-                            width : 120,
+                            dataIndex: 'color',
+                            text: 'Color',
+                            width: 120,
                             renderer(value, metaData) {
                                 metaData.tdStyle = `background-color: ${value}`;
                                 return value;
@@ -31,42 +30,41 @@ async function init() {
                             resizable: false,
                         },
                         {
-                            dataIndex : 'score',
-                            text : 'Score',
-                            width : 120,
+                            dataIndex: 'score',
+                            text: 'Score',
+                            width: 120,
                             renderer(score) {
                                 return `
-                            <div style="
-                                width : ${score / 10}%;
-                                background-color: blue;
-                                height : 3px;
-                                position: absolute;
-                                top: 0;
-                                left :0;
-                                "></div>
-                            ${score}
-                            `
+                                    <div style="
+                                        width: ${score / 10}%;
+                                        background-color: blue;
+                                        height: 3px;
+                                        position: absolute;
+                                        top: 0;
+                                        left: 0;
+                                    "></div>
+                                    ${score}
+                                `;
                             },
                             sortable: false,
                             resizable: false,
                         },
-                        { dataIndex : 'start', text : 'Start', width : 120, xtype : 'datecolumn', sortable: false, resizable: false, },
+                        { dataIndex: 'start', text: 'Start', width: 120, xtype: 'datecolumn', sortable: false, resizable: false },
                         {
-                            dataIndex : 'done',
-                            text : 'Done',
-                            width : 90,
-                            renderer : (value) => value ? 'Yes' : 'No',
+                            dataIndex: 'done',
+                            text: 'Done',
+                            width: 90,
+                            renderer: (value) => (value ? 'Yes' : 'No'),
                             sortable: false,
                             resizable: false,
                         },
-                        { dataIndex : 'rating', text : 'Rating', width : 90, sortable: false, resizable: false, }
+                        { dataIndex: 'rating', text: 'Rating', width: 90, sortable: false, resizable: false }
                     ],
-
-                    height : 1024,
+                    height: 1024,
                     rowHeight: 43,
-                    renderTo : 'container',
-                    bufferedRenderer : true,
-                    enableLocking : true
+                    renderTo: 'container',
+                    bufferedRenderer: true,
+                    enableLocking: true
                 });
 
                 setTimeout(() => {
@@ -78,7 +76,6 @@ async function init() {
                         callback() {
                             FPS.stop();
                         }
-
                     });
                 }, 500);
             }
