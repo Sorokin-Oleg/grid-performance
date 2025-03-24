@@ -4,3 +4,11 @@
 # IDEs and editors
 /.idea
 /.vscode
+
+# Ignore Node.js dependencies
+node_modules/
+package-lock.json
+
+# Ignore generated files
+automation/results.csv
+*.json

@@ -1,4 +1,4 @@
-import { ROWS_COUNT } from './consts.js';
+const ROWS_COUNT = 10000;
 
 class DataGenerator {
     get FIRST_NAMES() {
@@ -67,4 +67,4 @@ class DataGenerator {
     }
 }
 
-export default new DataGenerator();
+module.exports = new DataGenerator();
