@@ -11,3 +11,4 @@ package-lock.json
 
 # Ignore generated files
 automation/results.csv
+*.json

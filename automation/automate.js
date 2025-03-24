@@ -1,7 +1,19 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 const path = require('path');
+const dataGenerator = require('../util/dataGenerator');
 
+/**
+ * Generate Data for the table.
+ */
+const generatedData = (rows) => {
+  rows.forEach(item => {
+    const data = dataGenerator.generateData(item);
+    const filePath = path.join(__dirname, '../util', `${item}.json`);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  })
+}
+generatedData([10000, 100000, 500000, 1000000]);
 /**
  * Absolute path to the results CSV file (inside the automation folder).
  */
