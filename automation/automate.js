@@ -11,9 +11,10 @@ const generatedData = (rows) => {
     const data = dataGenerator.generateData(item);
     const filePath = path.join(__dirname, '../util', `${item}.json`);
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
-  })
-}
+  });
+};
 generatedData([10000, 100000, 500000, 1000000]);
+
 /**
  * Absolute path to the results CSV file (inside the automation folder).
  */
@@ -21,10 +22,15 @@ const csvFilePath = path.join(__dirname, 'results.csv');
 console.log(`CSV file path: ${csvFilePath}`);
 
 /**
- * Initialize the CSV file with headers.
+ * Initialize the CSV file with headers, including all useful metrics.
  */
 try {
-  const csvHeaders = 'testIndex,testName,testLink,cycleCount,initialRendering,elapsedTime,avgFps1,avgFps2,frames\n';
+  // Delete the old file if it exists
+  if (fs.existsSync(csvFilePath)) {
+    fs.unlinkSync(csvFilePath);
+    console.log('Old CSV file deleted.');
+  }
+  const csvHeaders = 'testIndex,testName,testLink,cycleCount,initialRendering,elapsedTime,avgFps1,avgFps2,frames,memoryUsage,jsHeapUsedSize,jsHeapTotalSize,domNodes,layoutCount,layoutDuration,recalcStyleCount,recalcStyleDuration,scriptDuration,taskDuration\n';
   fs.writeFileSync(csvFilePath, csvHeaders);
   console.log('CSV file successfully created with headers.');
 } catch (error) {
@@ -37,15 +43,12 @@ try {
 (async () => {
   let browser;
   try {
-    // Launch Puppeteer with a visible browser for debugging purposes.
     browser = await puppeteer.launch({ headless: false });
     const page = await browser.newPage();
 
-    // Navigate to the main page containing test links.
     console.log('Navigating to http://127.0.0.1:5500...');
     await page.goto('http://127.0.0.1:5500', { waitUntil: 'networkidle2' });
 
-    // Extract test links from the page (elements with class 'samples-link').
     console.log('Extracting test links...');
     const testLinks = await page.evaluate(() => {
       const links = Array.from(document.querySelectorAll('a.samples-link')).map(link => ({
@@ -64,7 +67,6 @@ try {
       return;
     }
 
-    // Iterate over each test link and run the performance test.
     for (let testIndex = 0; testIndex < testLinks.length; testIndex++) {
       const { href: testLink, name: testName } = testLinks[testIndex];
       console.log(`Running test ${testIndex + 1}: ${testName} (${testLink})`);
@@ -73,19 +75,21 @@ try {
       let testData = { testName, testLink };
       let cycleCount = 0;
 
-      // Wait for the test to complete by listening for console messages.
+      // Measure metrics before the test starts
+      const metricsBefore = await testPage.metrics();
+      console.log('Metrics before test:', metricsBefore);
+
+      // Wait for the test to complete
       const waitForTestCompletion = Promise.race([
         new Promise((resolve) => {
           testPage.on('console', async (msg) => {
             const text = msg.text();
             console.log('Console message:', text);
 
-            // Look for the message indicating test completion (e.g., "Average results for 3 measuring(s)").
             const match = text.match(/^Average results for (\d+) measuring\(s\)$/);
             if (match) {
               cycleCount = parseInt(match[1], 10);
 
-              // The next console message should contain the metrics object.
               testPage.on('console', async (nextMsg) => {
                 const nextText = nextMsg.text();
                 console.log('Next console message:', nextText);
@@ -93,7 +97,7 @@ try {
                 if (nextText.includes('JSHandle@object')) {
                   const metrics = await extractMetricsFromObject(nextMsg);
                   if (metrics) {
-                    console.log(`Metrics for test "${testName}" ${testLink} (averaged over ${cycleCount} cycles):`, metrics);
+                    console.log(`Metrics from FPS for test "${testName}" (averaged over ${cycleCount} cycles):`, metrics);
                     Object.assign(testData, metrics);
                     testData.cycleCount = cycleCount;
                   } else {
@@ -105,13 +109,9 @@ try {
             }
           });
         }),
-        // Timeout after 120 seconds to prevent hanging.
-        new Promise((_, reject) => {
-          setTimeout(() => reject(new Error('Test timeout (120 seconds)')), 120000);
-        }),
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Test timeout (120 seconds)')), 120000)),
       ]);
 
-      // Navigate to the test page and wait for completion.
       console.log('Waiting for test to complete...');
       try {
         await testPage.goto(testLink, { waitUntil: 'networkidle2' });
@@ -120,11 +120,27 @@ try {
         console.error(`Error waiting for test "${testName}":`, error);
       }
 
+      // Measure metrics after the test
+      const metricsAfter = await testPage.metrics();
+      console.log('Metrics after test:', metricsAfter);
+
+      // Calculate the difference for all relevant metrics
+      testData.jsHeapUsedSize = (metricsAfter.JSHeapUsedSize - metricsBefore.JSHeapUsedSize) / 1024 / 1024; // MB
+      testData.jsHeapTotalSize = (metricsAfter.JSHeapTotalSize - metricsBefore.JSHeapTotalSize) / 1024 / 1024; // MB
+      testData.domNodes = metricsAfter.Nodes; // Absolute value after the test
+      testData.layoutCount = metricsAfter.LayoutCount - metricsBefore.LayoutCount;
+      testData.layoutDuration = metricsAfter.LayoutDuration - metricsBefore.LayoutDuration; // Seconds
+      testData.recalcStyleCount = metricsAfter.RecalcStyleCount - metricsBefore.RecalcStyleCount;
+      testData.recalcStyleDuration = metricsAfter.RecalcStyleDuration - metricsBefore.RecalcStyleDuration; // Seconds
+      testData.scriptDuration = metricsAfter.ScriptDuration - metricsBefore.ScriptDuration; // Seconds
+      testData.taskDuration = metricsAfter.TaskDuration - metricsBefore.TaskDuration; // Seconds
+
+      console.log('Final test data before CSV:', testData);
+
       console.log(`Test "${testName}" completed, closing page...`);
       await testPage.close();
       console.log(`Page for test "${testName}" closed.`);
 
-      // Append test results to the CSV file.
       appendToCsv({ testIndex, ...testData });
     }
 
@@ -152,8 +168,8 @@ async function extractMetricsFromObject(msg) {
       if ('Initial rendering (ms)' in arg) {
         metrics.initialRendering = parseFloat(arg['Initial rendering (ms)']);
       }
-      if ('Elapsed time' in arg) {
-        metrics.elapsedTime = parseFloat(arg['Elapsed time']);
+      if ('Elapsed time (ms)' in arg) {
+        metrics.elapsedTime = parseFloat(arg['Elapsed time (ms)']);
       }
       if ('Average FPS 1' in arg) {
         metrics.avgFps1 = parseFloat(arg['Average FPS 1']);
@@ -164,6 +180,9 @@ async function extractMetricsFromObject(msg) {
       if ('Frames' in arg) {
         metrics.frames = parseFloat(arg['Frames']);
       }
+      if ('Memory Usage (MB)' in arg) {
+        metrics.memoryUsage = arg['Memory Usage (MB)'] === 'N/A' ? 'N/A' : parseFloat(arg['Memory Usage (MB)']);
+      }
     }
   }
 
@@ -171,14 +190,13 @@ async function extractMetricsFromObject(msg) {
 }
 
 /**
- * Appends test results to the CSV file.
+ * Appends test results to the CSV file, including all metrics.
  * @param {Object} data - The test data to append.
  */
 function appendToCsv(data) {
   try {
-    // Round numerical values to 2 decimal places for readability.
-    const round = (value) => (typeof value === 'number' ? Number(value.toFixed(2)) : value);
-    const csvRow = `${data.testIndex},${data.testName || ''},${data.testLink || ''},${data.cycleCount || ''},${round(data.initialRendering) || ''},${round(data.elapsedTime) || ''},${round(data.avgFps1) || ''},${round(data.avgFps2) || ''},${round(data.frames) || ''}\n`;
+    const round = (value) => (typeof value === 'number' ? Number(value.toFixed(2)) : value || '');
+    const csvRow = `${data.testIndex},${data.testName || ''},${data.testLink || ''},${data.cycleCount || ''},${round(data.initialRendering)},${round(data.elapsedTime)},${round(data.avgFps1)},${round(data.avgFps2)},${round(data.frames)},${round(data.memoryUsage)},${round(data.jsHeapUsedSize)},${round(data.jsHeapTotalSize)},${round(data.domNodes)},${round(data.layoutCount)},${round(data.layoutDuration)},${round(data.recalcStyleCount)},${round(data.recalcStyleDuration)},${round(data.scriptDuration)},${round(data.taskDuration)}\n`;
     fs.appendFileSync(csvFilePath, csvRow);
     console.log(`Results for test "${data.testName}" appended to ${csvFilePath}`);
   } catch (error) {
